@@ -55,6 +55,7 @@
 #include <iostream>
 
 #define SHARE_DESKTOP_UPDATE_DELAY      1
+#define SERVUS_BROWSE_DELAY           100
 #define FRAME_RATE_AVERAGE_NUM_FRAMES  10
 
 #define DEFAULT_HOST_ADDRESS  "bbpav02.epfl.ch"
@@ -67,6 +68,9 @@ MainWindow::MainWindow()
     , y_(0)
     , width_(0)
     , height_(0)
+#ifdef DEFLECT_USE_LUNCHBOX
+    , servus_( "_displaycluster._tcp" )
+#endif
 {
     generateCursorImage();
     setupUI();
@@ -158,6 +162,12 @@ void MainWindow::setupUI()
 
     // Update timer
     connect(&shareDesktopUpdateTimer_, SIGNAL(timeout()), this, SLOT(shareDesktopUpdate()));
+
+#ifdef DEFLECT_USE_LUNCHBOX
+    servus_.beginBrowsing( lunchbox::Servus::IF_ALL );
+    connect( &browseTimer_, SIGNAL( timeout( )), this, SLOT( updateServus( )));
+    browseTimer_.start( SERVUS_BROWSE_DELAY );
+#endif
 }
 
 void MainWindow::startStreaming()
@@ -176,6 +186,7 @@ void MainWindow::startStreaming()
 #ifdef __APPLE__
     napSuspender_.suspend();
 #endif
+    browseTimer_.stop();
     shareDesktopUpdateTimer_.start(SHARE_DESKTOP_UPDATE_DELAY);
 }
 
@@ -247,6 +258,20 @@ void MainWindow::showDesktopSelectionWindow(bool set)
     {
         desktopSelectionWindow_->hide();
     }
+}
+
+void MainWindow::updateServus()
+{
+#ifdef DEFLECT_USE_LUNCHBOX
+    servus_.browse( 0 );
+    const lunchbox::Strings& hosts = servus_.getInstances();
+    if( hosts.empty( ))
+        return;
+
+    browseTimer_.stop();
+    if( hostnameLineEdit_.text() == DEFAULT_HOST_ADDRESS )
+        hostnameLineEdit_.setText( hosts.front().c_str( ));
+#endif
 }
 
 void MainWindow::shareDesktopUpdate()
