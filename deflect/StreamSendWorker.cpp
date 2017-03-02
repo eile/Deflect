@@ -66,8 +66,7 @@ void StreamSendWorker::_run()
             break;
 
         const Request& request = _requests.back();
-        request.first->set_value(_stream.send(request.second) &&
-                                 _stream.finishFrame());
+        request.first->set_value(_stream.send(request.second));
         _requests.pop_back();
     }
 }

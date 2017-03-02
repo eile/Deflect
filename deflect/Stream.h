@@ -124,11 +124,11 @@ public:
     using Future = std::future<bool>;
 
     /**
-     * Send an image and finish the frame asynchronously.
+     * Send an image asynchronously.
      *
-     * The send (and the optional compression) and finishFrame() are executed in
-     * a different thread. The result of this operation can be obtained by the
-     * returned future object.
+     * The send (and the optional compression) are executed in a different
+     * thread. The result of this operation can be obtained by the returned
+     * future object.
      *
      * @param image The image to send. Note that the image is not copied, so the
      *              referenced must remain valid until the send is finished
@@ -137,6 +137,7 @@ public:
      * @version 1.1
      */
     DEFLECT_API Future asyncSend(const ImageWrapper& image);
+
     //@}
 
     /** @name Synchronous send API */
