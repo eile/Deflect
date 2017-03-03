@@ -202,7 +202,8 @@ bool Socket::_connect(const std::string& host, const unsigned short port)
 
     if (!_receiveProtocolVersion())
     {
-        std::cerr << "server protocol version was not received" << std::endl;
+        std::cerr << "server protocol version was not received from " << host
+                  << ":" << port << std::endl;
         _socket->disconnectFromHost();
         return false;
     }

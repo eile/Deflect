@@ -60,7 +60,7 @@ bool deflectCompressImage = true;
 bool deflectStereoStreamLeft = false;
 bool deflectStereoStreamRight = false;
 unsigned int deflectCompressionQuality = 75;
-std::string deflectHost;
+std::string deflectHost = "localhost";
 std::string deflectStreamId = "SimpleStreamer";
 std::unique_ptr<deflect::Stream> deflectStream;
 
@@ -80,9 +80,6 @@ int main(int argc, char** argv)
 {
     readCommandLineArguments(argc, argv);
 
-    if (deflectHost.empty())
-        syntax(EXIT_FAILURE);
-
     initGLWindow(argc, argv);
     initDeflectStream();
 
@@ -94,8 +91,8 @@ int main(int argc, char** argv)
 
 void syntax(const int exitStatus)
 {
-    std::cout << "Usage: simplestreamer [options] <host>" << std::endl;
-    std::cout << "Stream a GLUT teapot to a remote host\n" << std::endl;
+    std::cout << "Usage: simplestreamer [options] [<host>]" << std::endl;
+    std::cout << "Stream a teapot rendering to a remote host\n" << std::endl;
     std::cout << "Options:" << std::endl;
     std::cout << " -h, --help         display this help" << std::endl;
     std::cout << " -n <stream id>     set stream identifier (default: "
@@ -192,14 +189,14 @@ void initDeflectStream()
     deflectStream.reset(new deflect::Stream(deflectStreamId, deflectHost));
     if (!deflectStream->isConnected())
     {
-        std::cerr << "Could not connect to host!" << std::endl;
+        std::cerr << "Could not connect to host" << std::endl;
         deflectStream.reset();
         exit(EXIT_FAILURE);
     }
 
     if (deflectInteraction && !deflectStream->registerForEvents())
     {
-        std::cerr << "Could not register for events!" << std::endl;
+        std::cerr << "Could not register for events" << std::endl;
         deflectStream.reset();
         exit(EXIT_FAILURE);
     }
