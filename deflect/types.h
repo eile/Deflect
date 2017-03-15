@@ -95,6 +95,12 @@ class QuickRenderer;
 class QmlStreamer;
 class TouchInjector;
 }
+
+/** @internal */
+namespace test
+{
+class Application;
+}
 }
 
 #endif
